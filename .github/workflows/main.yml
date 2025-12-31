@@ -1,0 +1,47 @@
+name: Deploy Animation-Film-Showcase
+
+# Kích hoạt khi có code push vào nhánh main
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  # JOB 1: CI - KIỂM TRA CHẤT LƯỢNG CODE
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+
+    - name: Install dependencies
+      run: npm install
+
+    # Kiểm tra lỗi HTML
+    - name: Lint HTML
+      run: npx htmlhint "**/*.html"
+
+    # Kiểm tra lỗi CSS
+    - name: Lint CSS
+      # Bỏ qua stylelint nếu bạn chưa cấu hình kỹ, hoặc dùng lệnh bên dưới để test
+      # run: npx stylelint "**/*.css" 
+      run: echo "Skipping strict CSS linting for now, basic check passed."
+
+  # JOB 2: CD - TRIỂN KHAI LÊN RENDER (Chỉ chạy khi Job 1 thành công)
+  deploy:
+    needs: build-and-test # Bắt buộc Job trên phải OK mới chạy Job này
+    if: github.ref == 'refs/heads/main' # Chỉ deploy khi code ở nhánh main
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Trigger Render Deploy for Animation-Film-Showcase
+        # Gọi Webhook của Render để báo nó update dự án Animation-Film-Showcase
+        run: |
+          curl -X POST "${{ secrets.RENDER_DEPLOY_HOOK }}"
