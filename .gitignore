@@ -1,27 +1,80 @@
-#Bỏ qua thư mục thư viện nặng
-
+# Dependencies
 node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
 
-#Bỏ qua các file log lỗi của npm
+# Environment variables
+.env
+.env.local
+.env.development
+.env.production
+.env.test
 
+# Logs
+*.log
+logs/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+lerna-debug.log*
 
-#Bỏ qua file hệ thống của Mac và Windows (File rác)
-
+# OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
+desktop.ini
 
-#Bỏ qua file cấu hình môi trường chứa mật khẩu (Bảo mật)
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
 
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+# Video files (Quá nặng, không nên push lên Git)
+*.mp4
+*.mov
+*.avi
+*.wmv
+*.flv
+*.mkv
+*.webm
+assets/img/trailer.mp4
 
-#Bỏ qua thư mục build (nếu sau này có dùng framework build)
+# Backup files
+*.bak
+*.backup
+*.tmp
+*.temp
 
+# Build & Cache
 dist/
 build/
+.cache/
+.parcel-cache/
+.next/
+out/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Misc
+.env.backup
+.vercel
+.netlify
