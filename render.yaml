@@ -1,0 +1,25 @@
+services:
+  - type: web
+    name: animation-film-showcase
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: animation-film-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CLIENT_URL
+        value: https://animation-film-showcase.onrender.com
+
+  - type: pgsql
+    name: animation-film-db
+    plan: free
+    databaseName: animation_film_db
+    user: admin
