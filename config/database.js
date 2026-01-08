@@ -23,13 +23,14 @@ pool.on('error', (err) => {
     // Không exit process để Render có thể retry
 });
 
-// Test query khi khởi động
-pool.query('SELECT NOW()', (err, res) => {
-    if (err) {
-        console.error('❌ Database query test failed:', err.message);
-    } else {
+// Test query khi khởi động (không blocking)
+pool.query('SELECT NOW()')
+    .then(res => {
         console.log('✅ Database query test successful:', res.rows[0].now);
-    }
-});
+    })
+    .catch(err => {
+        console.error('❌ Database query test failed:', err.message);
+        console.log('⚠️  Server sẽ tiếp tục chạy, nhưng cần kiểm tra DATABASE_URL trong file .env');
+    });
 
 module.exports = pool;

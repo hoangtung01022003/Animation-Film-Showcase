@@ -3,9 +3,6 @@ const cors = require('cors');
 const path = require('path');
 require('dotenv').config();
 
-const authRoutes = require('./routes/auth');
-const reviewRoutes = require('./routes/reviews');
-
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -24,12 +21,25 @@ app.use(express.urlencoded({ extended: true }));
 // Trust proxy for Render deployment
 app.set('trust proxy', 1);
 
+// Log all requests for debugging
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.path}`);
+    next();
+});
+
 // Health check endpoint cho Render
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'ok', message: 'Server is running' });
 });
 
-// Serve static files
+// API Routes - PHẢI ĐẶT TRƯỚC static files
+const authRoutes = require('./routes/auth');
+const reviewRoutes = require('./routes/reviews');
+
+app.use('/api/auth', authRoutes);
+app.use('/api/reviews', reviewRoutes);
+
+// Serve static files - ĐẶT SAU API routes
 app.use(express.static(path.join(__dirname), { 
     maxAge: process.env.NODE_ENV === 'production' ? '1d' : 0 
 }));
@@ -37,20 +47,16 @@ app.use('/assets', express.static(path.join(__dirname, 'assets'), {
     maxAge: process.env.NODE_ENV === 'production' ? '7d' : 0
 }));
 
-// API Routes
-app.use('/api/auth', authRoutes);
-app.use('/api/reviews', reviewRoutes);
-
 // Serve index.html cho tất cả các routes không phải API (SPA routing)
+// PHẢI ĐẶT CUỐI CÙNG
 app.get('*', (req, res) => {
-    if (!req.path.startsWith('/api')) {
-        res.sendFile(path.join(__dirname, 'index.html'));
-    }
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error('Error:', err.message);
+    console.error('Stack:', err.stack);
     res.status(err.status || 500).json({ 
         success: false, 
         message: process.env.NODE_ENV === 'production' 
